@@ -1,13 +1,18 @@
 import 'package:chat_app/widgets/messages.dart';
-import 'package:chat_app/widgets/new_message.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:chat_app/widgets/search_bars/new_message.dart';
 import 'package:flutter/material.dart';
 
 class ChatScreen extends StatefulWidget {
   final String liveUserId;
   final String contactId;
+  final String contactName;
+  final String profileImage;
   const ChatScreen(
-      {super.key, required this.liveUserId, required this.contactId});
+      {super.key,
+      required this.contactName,
+      required this.liveUserId,
+      required this.contactId,
+      required this.profileImage});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -18,35 +23,29 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios),
-            onPressed: () => Navigator.of(context).pop()),
+        automaticallyImplyLeading: false,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Chats'),
-        actions: [
-          DropdownButton(
-              icon: const Icon(Icons.more_vert),
-              items: const [
-                DropdownMenuItem(
-                  value: 'logout',
-                  child: Row(
-                    children: [
-                      Icon(Icons.exit_to_app),
-                      SizedBox(width: 10),
-                      Text('LogOut')
-                    ],
-                  ),
-                )
-              ],
-              onChanged: (value) {
-                if (value == 'logout') {
-                  FirebaseAuth.instance.signOut();
-                }
-              })
-        ],
+        title: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            InkWell(
+              onTap: () => Navigator.of(context).pop(),
+              child: const Icon(Icons.arrow_back_ios),
+            ),
+            CircleAvatar(
+              backgroundImage: NetworkImage(widget.profileImage),
+            ),
+            const SizedBox(width: 10),
+            Text(widget.contactName,
+                style: const TextStyle(fontWeight: FontWeight.bold)),
+          ],
+        ),
       ),
-      body: const Column(
-        children: [Expanded(child: Messages()), NewMesasageBar()],
+      body: Column(
+        children: [
+          Expanded(child: Messages(widget.liveUserId, widget.contactId)),
+          NewMesasageBar(widget.liveUserId, widget.contactId)
+        ],
       ),
     );
   }

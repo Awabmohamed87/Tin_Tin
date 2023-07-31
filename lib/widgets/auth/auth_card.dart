@@ -1,4 +1,6 @@
-import 'package:chat_app/widgets/user_image_picker.dart';
+import 'dart:io';
+
+import 'package:chat_app/widgets/auth/user_image_picker.dart';
 import 'package:flutter/material.dart';
 
 class AuthCard extends StatefulWidget {
@@ -7,7 +9,8 @@ class AuthCard extends StatefulWidget {
       required String password,
       required String username,
       required bool isLoggingIn,
-      required BuildContext ctx}) submitFunc;
+      required BuildContext ctx,
+      File image}) submitFunc;
   const AuthCard(this.submitFunc, {super.key});
 
   @override
@@ -24,6 +27,14 @@ class _AuthCardState extends State<AuthCard> {
 
   bool _isLoading = false;
 
+  File? _userImage;
+
+  void onImagePicked(pickedImage) {
+    if (pickedImage != null) {
+      _userImage = pickedImage;
+    }
+  }
+
   void _submit() {
     bool isValid = _formKey.currentState!.validate();
     FocusScope.of(context).unfocus();
@@ -34,7 +45,11 @@ class _AuthCardState extends State<AuthCard> {
           password: _password,
           username: _username,
           isLoggingIn: _isLoggingIn,
-          ctx: context);
+          ctx: context,
+          image: !_isLoggingIn
+              ? _userImage!
+              : File(
+                  'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg '));
       setState(() {
         _isLoading = false;
       });
@@ -56,7 +71,7 @@ class _AuthCardState extends State<AuthCard> {
             key: _formKey,
             child: Column(
               children: [
-                if (!_isLoggingIn) const UserImagePicker(),
+                if (!_isLoggingIn) UserImagePicker(onImagePicked),
                 TextFormField(
                   key: const ValueKey('email'),
                   onChanged: (_) {},

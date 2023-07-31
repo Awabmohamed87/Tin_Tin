@@ -3,7 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class NewMesasageBar extends StatefulWidget {
-  const NewMesasageBar({super.key});
+  final String liveUserId, contactId;
+  const NewMesasageBar(this.liveUserId, this.contactId, {super.key});
 
   @override
   State<NewMesasageBar> createState() => _NewMesasageBarState();
@@ -26,7 +27,20 @@ class _NewMesasageBarState extends State<NewMesasageBar> {
           .doc(userid!.uid)
           .get();
       await FirebaseFirestore.instance
-          .collection('/chats/${userid.uid}/contacts')
+          .collection(
+              '/chats/${widget.liveUserId}/contacts/${widget.contactId}/messages')
+          .add({
+        'text': _message,
+        'createdAt': Timestamp.now(),
+        'userid': userid.uid,
+        'username': username['username']
+      });
+      await FirebaseFirestore.instance
+          .collection('/chats')
+          .doc('/${widget.contactId}')
+          .collection('/contacts')
+          .doc('/${widget.liveUserId}')
+          .collection('/messages')
           .add({
         'text': _message,
         'createdAt': Timestamp.now(),

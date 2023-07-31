@@ -1,10 +1,11 @@
-import 'package:chat_app/widgets/message_bubble.dart';
+import 'package:chat_app/widgets/bubbles/message_bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Messages extends StatefulWidget {
-  const Messages({super.key});
+  final String liveUserId, contactId;
+  const Messages(this.liveUserId, this.contactId, {super.key});
 
   @override
   State<Messages> createState() => _MessagesState();
@@ -15,7 +16,8 @@ class _MessagesState extends State<Messages> {
   Widget build(BuildContext context) {
     return StreamBuilder(
       stream: FirebaseFirestore.instance
-          .collection('/chat')
+          .collection(
+              '/chats/${widget.liveUserId}/contacts/${widget.contactId}/messages')
           .orderBy('createdAt', descending: true)
           .snapshots(),
       builder: (context, snapshot) {

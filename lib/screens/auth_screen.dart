@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
-import '../widgets/auth_card.dart';
+import '../widgets/auth/auth_card.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -20,7 +23,8 @@ class _AuthScreenState extends State<AuthScreen> {
       required String password,
       required String username,
       required bool isLoggingIn,
-      required BuildContext ctx}) async {
+      required BuildContext ctx,
+      File? image}) async {
     UserCredential authResult;
     try {
       if (isLoggingIn) {
@@ -29,10 +33,20 @@ class _AuthScreenState extends State<AuthScreen> {
       } else {
         authResult = await database_auth.createUserWithEmailAndPassword(
             email: email, password: password);
+        final ref = FirebaseStorage.instance
+            .ref()
+            .child('profileImages')
+            .child('${authResult.user!.uid}.jpg');
+        await ref.putFile(image!);
+        final imageUrl = await ref.getDownloadURL();
         await FirebaseFirestore.instance
             .collection('users')
             .doc(authResult.user!.uid)
-            .set({'username': username, 'password': password});
+            .set({
+          'username': username,
+          'password': password,
+          'profileImage': imageUrl
+        });
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {

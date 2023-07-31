@@ -5,8 +5,12 @@ import 'package:flutter/material.dart';
 class ContactBubble extends StatefulWidget {
   final String contactName;
   final String contactId;
+  final String userProfile;
   const ContactBubble(
-      {super.key, required this.contactName, required this.contactId});
+      {super.key,
+      required this.contactName,
+      required this.contactId,
+      required this.userProfile});
 
   @override
   State<ContactBubble> createState() => _ContactBubbleState();
@@ -19,8 +23,11 @@ class _ContactBubbleState extends State<ContactBubble> {
       onTap: () {
         Navigator.of(context).push(MaterialPageRoute(
             builder: (_) => ChatScreen(
-                liveUserId: FirebaseAuth.instance.currentUser!.uid,
-                contactId: widget.contactId)));
+                  contactName: widget.contactName,
+                  liveUserId: FirebaseAuth.instance.currentUser!.uid,
+                  contactId: widget.contactId,
+                  profileImage: widget.userProfile,
+                )));
       },
       child: Container(
         color: Colors.grey[100],
@@ -29,7 +36,10 @@ class _ContactBubbleState extends State<ContactBubble> {
         padding: const EdgeInsets.symmetric(horizontal: 5),
         child: Row(
           children: [
-            const CircleAvatar(radius: 27),
+            CircleAvatar(
+              radius: 27,
+              backgroundImage: NetworkImage(widget.userProfile),
+            ),
             const SizedBox(width: 10),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -41,7 +51,23 @@ class _ContactBubbleState extends State<ContactBubble> {
                 ),
                 const Text('latest message')
               ],
-            )
+            ),
+            const Spacer(),
+            Container(
+              height: 20,
+              width: 20,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.inversePrimary,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Text(
+                '0',
+                textAlign: TextAlign.center,
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+              ),
+            ),
+            const SizedBox(width: 10)
           ],
         ),
       ),
