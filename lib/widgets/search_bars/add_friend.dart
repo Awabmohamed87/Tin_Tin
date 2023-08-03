@@ -13,41 +13,43 @@ class AddFriendBar extends StatefulWidget {
 class _AddFriendBarState extends State<AddFriendBar> {
   final TextEditingController _controller = TextEditingController();
 
-  void addFriend(String email) async {
-    String id = '';
-    final response =
-        FirebaseFirestore.instance.collection('/users').snapshots();
-    await response.forEach((element) {
-      for (var element in element.docs) {
-        if (element['username'] == email) {
-          id = element.id;
-          FirebaseFirestore.instance
-              .collection('/chats')
-              .doc('/${FirebaseAuth.instance.currentUser!.uid}')
-              .collection('/contacts')
-              .doc('/$id')
-              .set({});
-          FirebaseFirestore.instance
-              .collection('/chats')
-              .doc('/$id')
-              .collection('/requests')
-              .doc('/${FirebaseAuth.instance.currentUser!.uid}')
-              .set({});
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (_) => ChatScreen(
-                  contactName: element['username'],
-                  liveUserId: FirebaseAuth.instance.currentUser!.uid,
-                  contactId: element.id,
-                  profileImage: element['profileImage'])));
-        }
-      }
-    });
+  void addFriend(String email, context) async {
+    final QuerySnapshot<Map<String, dynamic>> response =
+        await FirebaseFirestore.instance.collection('/users').get();
+    final data = response.docs.map((e) => e.data()).toList();
+
+    var searchedUser =
+        data.firstWhere((element) => element['username'] == email);
+    int idIndex = data.indexWhere((element) => element['username'] == email);
+    String id = response.docs[idIndex].id;
+    FirebaseFirestore.instance
+        .collection('/chats')
+        .doc('/${FirebaseAuth.instance.currentUser!.uid}')
+        .collection('/contacts')
+        .doc('/$id')
+        .set({});
+    FirebaseFirestore.instance
+        .collection('/chats')
+        .doc('/$id')
+        .collection('/requests')
+        .doc('/${FirebaseAuth.instance.currentUser!.uid}')
+        .set({});
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (_) => ChatScreen(
+            contactName: searchedUser['username'],
+            liveUserId: FirebaseAuth.instance.currentUser!.uid,
+            contactId: id,
+            profileImage: searchedUser['profileImage'])));
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          right: 8,
+          left: 8,
+          top: 8),
       child: Row(
         children: [
           Expanded(
@@ -60,13 +62,13 @@ class _AddFriendBarState extends State<AddFriendBar> {
             ),
           )),
           IconButton(
-              icon: const Icon(
+              icon: Icon(
                 Icons.person_add_alt_outlined,
-                color: Colors.grey,
+                color: _controller.text.isEmpty ? Colors.grey : Colors.red,
               ),
               onPressed: () {
                 Scaffold.of(context).closeDrawer();
-                addFriend(_controller.text.toString());
+                addFriend(_controller.text.toString(), context);
               })
         ],
       ),

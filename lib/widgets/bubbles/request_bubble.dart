@@ -1,3 +1,4 @@
+import 'package:chat_app/widgets/focusable_profile_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -35,11 +36,8 @@ class _RequestBubbleState extends State<RequestBubble> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    CircleAvatar(
-                      radius: 15,
-                      backgroundImage:
-                          NetworkImage(snapshot.data!['profileImage']),
-                    ),
+                    FocusableProfileImage(snapshot.data!['profileImage'],
+                        radius: 18),
                     const SizedBox(width: 10),
                     Text(snapshot.data!['username'],
                         style: const TextStyle(fontSize: 22)),

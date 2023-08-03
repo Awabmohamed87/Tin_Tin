@@ -1,4 +1,5 @@
 import 'package:chat_app/screens/chat_screen.dart';
+import 'package:chat_app/widgets/focusable_profile_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -36,10 +37,7 @@ class _ContactBubbleState extends State<ContactBubble> {
         padding: const EdgeInsets.symmetric(horizontal: 5),
         child: Row(
           children: [
-            CircleAvatar(
-              radius: 27,
-              backgroundImage: NetworkImage(widget.userProfile),
-            ),
+            FocusableProfileImage(widget.userProfile),
             const SizedBox(width: 10),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,

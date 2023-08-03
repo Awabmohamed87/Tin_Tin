@@ -27,7 +27,7 @@ class _MessageBubbleState extends State<MessageBubble> {
         Container(
           width: widget.message.length < 40
               ? widget.message.length < 8
-                  ? 70
+                  ? 90
                   : widget.message.length.toDouble() * 10
               : MediaQuery.of(context).size.width * 0.7,
           margin: const EdgeInsets.all(5),

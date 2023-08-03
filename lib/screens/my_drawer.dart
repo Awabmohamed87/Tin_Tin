@@ -32,12 +32,11 @@ class _MyDrawerState extends State<MyDrawer> {
                     'Pending Requests',
                     style: TextStyle(fontWeight: FontWeight.w700),
                   ),
-                  IconButton(
-                    icon: const Icon(
+                  InkWell(
+                    child: const Icon(
                       Icons.close,
                     ),
-                    onPressed: () =>
-                        widget.scaffoldKey.currentState!.closeDrawer(),
+                    onTap: () => widget.scaffoldKey.currentState!.closeDrawer(),
                   ),
                 ],
               ),
