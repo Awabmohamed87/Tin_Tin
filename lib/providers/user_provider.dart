@@ -8,6 +8,7 @@ class UserProvider with ChangeNotifier {
   String? username;
   String? profileImage;
   String? userPassword;
+  int numOfRequests = 0;
   Future setLiveUser(id) async {
     try {
       final result = await FirebaseFirestore.instance.doc('/users/$id').get();
@@ -65,6 +66,16 @@ class UserProvider with ChangeNotifier {
     });
 
     profileImage = imageUrl;
+    notifyListeners();
+  }
+
+  void setNumberOfUsers() async {
+    QuerySnapshot<Map<String, dynamic>> response = await FirebaseFirestore
+        .instance
+        .collection('/chats/${FirebaseAuth.instance.currentUser!.uid}/requests')
+        .get();
+
+    numOfRequests = response.docs.length;
     notifyListeners();
   }
 }

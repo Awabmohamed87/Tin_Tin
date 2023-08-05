@@ -65,7 +65,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 FocusableProfileImage(
                     Provider.of<UserProvider>(context).profileImage!,
                     radius: 70),
-                GestureDetector(
+                InkWell(
                   onTap: () => showModalBottomSheet(
                       context: context,
                       builder: (ctx) => SizedBox(
@@ -94,7 +94,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       ],
                                     ),
                                   ),
-                                  GestureDetector(
+                                  InkWell(
                                     onTap: () => _pickImage(
                                         ImageSource.gallery, context),
                                     child: const Row(

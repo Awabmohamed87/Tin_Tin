@@ -1,6 +1,10 @@
 import 'package:chat_app/widgets/messages.dart';
 import 'package:chat_app/widgets/search_bars/new_message.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/theme_provider.dart';
 
 class ChatScreen extends StatefulWidget {
   final String liveUserId;
@@ -20,24 +24,35 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   @override
+  void initState() {
+    super.initState();
+    FirebaseMessaging fbm = FirebaseMessaging.instance;
+    fbm.requestPermission();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Provider.of<ThemeProvider>(context).secondryColor,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Provider.of<ThemeProvider>(context).mainColor,
         title: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             InkWell(
               onTap: () => Navigator.of(context).pop(),
-              child: const Icon(Icons.arrow_back_ios),
+              child: Icon(Icons.arrow_back_ios,
+                  color: Provider.of<ThemeProvider>(context).mainFontColor),
             ),
             CircleAvatar(
               backgroundImage: NetworkImage(widget.profileImage),
             ),
             const SizedBox(width: 10),
             Text(widget.contactName,
-                style: const TextStyle(fontWeight: FontWeight.bold)),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Provider.of<ThemeProvider>(context).mainFontColor)),
           ],
         ),
       ),

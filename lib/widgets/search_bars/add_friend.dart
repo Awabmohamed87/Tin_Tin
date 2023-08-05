@@ -11,6 +11,7 @@ class AddFriendBar extends StatefulWidget {
 }
 
 class _AddFriendBarState extends State<AddFriendBar> {
+  String searchString = '';
   final TextEditingController _controller = TextEditingController();
 
   void addFriend(String email, context) async {
@@ -54,6 +55,11 @@ class _AddFriendBarState extends State<AddFriendBar> {
         children: [
           Expanded(
               child: TextField(
+            onChanged: (value) {
+              setState(() {
+                searchString = value;
+              });
+            },
             controller: _controller,
             decoration: const InputDecoration(
               labelText: 'Enter user name..',
@@ -62,14 +68,16 @@ class _AddFriendBarState extends State<AddFriendBar> {
             ),
           )),
           IconButton(
-              icon: Icon(
+              color: Theme.of(context).primaryColor,
+              icon: const Icon(
                 Icons.person_add_alt_outlined,
-                color: _controller.text.isEmpty ? Colors.grey : Colors.red,
               ),
-              onPressed: () {
-                Scaffold.of(context).closeDrawer();
-                addFriend(_controller.text.toString(), context);
-              })
+              onPressed: searchString.trim().isEmpty
+                  ? null
+                  : () {
+                      Scaffold.of(context).closeDrawer();
+                      addFriend(_controller.text.toString(), context);
+                    })
         ],
       ),
     );

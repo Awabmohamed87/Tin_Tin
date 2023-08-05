@@ -3,6 +3,9 @@ import 'package:chat_app/widgets/bubbles/request_bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/theme_provider.dart';
 
 class MyDrawer extends StatefulWidget {
   // ignore: prefer_typing_uninitialized_variables
@@ -17,24 +20,29 @@ class _MyDrawerState extends State<MyDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
+      backgroundColor: Provider.of<ThemeProvider>(context).secondryColor,
       child: Column(
         children: [
           SizedBox(
             height: 90,
             child: DrawerHeader(
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.inversePrimary,
+                color: Provider.of<ThemeProvider>(context).mainColor,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     'Pending Requests',
-                    style: TextStyle(fontWeight: FontWeight.w700),
+                    style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        color:
+                            Provider.of<ThemeProvider>(context).mainFontColor),
                   ),
                   InkWell(
-                    child: const Icon(
+                    child: Icon(
                       Icons.close,
+                      color: Provider.of<ThemeProvider>(context).mainFontColor,
                     ),
                     onTap: () => widget.scaffoldKey.currentState!.closeDrawer(),
                   ),

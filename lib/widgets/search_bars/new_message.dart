@@ -18,7 +18,7 @@ class _NewMesasageBarState extends State<NewMesasageBar> {
   Widget build(BuildContext context) {
     void sendMessage() async {
       if (_message == '') return;
-      FocusScope.of(context).unfocus();
+
       _controller.clear();
 
       var userid = FirebaseAuth.instance.currentUser;
@@ -47,6 +47,32 @@ class _NewMesasageBarState extends State<NewMesasageBar> {
         'userid': userid.uid,
         'username': username['username']
       });
+      try {
+        var response = await FirebaseFirestore.instance
+            .collection('/chats')
+            .doc('/${widget.contactId}')
+            .collection('/contacts')
+            .doc('/${widget.liveUserId}')
+            .collection('/unreadMessages')
+            .get();
+        await FirebaseFirestore.instance
+            .collection('/chats')
+            .doc('/${widget.contactId}')
+            .collection('/contacts')
+            .doc('/${widget.liveUserId}')
+            .collection('/unreadMessages')
+            .doc(response.docs[0].id)
+            .set({'count': response.docs[0]['count'] + 1});
+      } catch (e) {
+        await FirebaseFirestore.instance
+            .collection('/chats')
+            .doc('/${widget.contactId}')
+            .collection('/contacts')
+            .doc('/${widget.liveUserId}')
+            .collection('/unreadMessages')
+            .add({'count': 1});
+      }
+
       _message = '';
     }
 

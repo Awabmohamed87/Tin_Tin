@@ -1,3 +1,4 @@
+import 'package:chat_app/providers/theme_provider.dart';
 import 'package:chat_app/providers/user_provider.dart';
 import 'package:chat_app/screens/auth_screen.dart';
 import 'package:chat_app/screens/home_screen.dart';
@@ -9,9 +10,10 @@ import 'package:provider/provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(ChangeNotifierProvider(
-      create: (context) => UserProvider(),
-      builder: ((context, child) => const MyApp())));
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(create: (context) => UserProvider()),
+    ChangeNotifierProvider(create: (context) => ThemeProvider()),
+  ], builder: ((context, child) => const MyApp())));
 }
 
 class MyApp extends StatelessWidget {

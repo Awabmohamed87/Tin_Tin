@@ -1,4 +1,6 @@
+import 'package:chat_app/providers/theme_provider.dart';
 import 'package:chat_app/providers/user_provider.dart';
+import 'package:chat_app/screens/appearance_screen.dart';
 import 'package:chat_app/screens/profile_screen.dart';
 import 'package:chat_app/widgets/bubbles/contact_bubble.dart';
 import 'package:chat_app/screens/my_drawer.dart';
@@ -16,36 +18,60 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String res = '';
+
+  @override
+  void initState() {
+    Provider.of<UserProvider>(context, listen: false).setNumberOfUsers();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     var scaffoldKey = GlobalKey<ScaffoldState>();
     return Scaffold(
         key: scaffoldKey,
+        backgroundColor: Provider.of<ThemeProvider>(context).secondryColor,
         drawer: MyDrawer(scaffoldKey: scaffoldKey),
         appBar: AppBar(
           leading: Center(
             child: InkWell(
-                child: Stack(alignment: Alignment.bottomRight, children: [
-                  const Icon(
-                    Icons.people,
-                    size: 30,
-                  ),
-                  Container(
-                    width: 15,
-                    height: 15,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20)),
-                  )
-                ]),
+                child: Stack(
+                  alignment: Alignment.bottomRight,
+                  children: [
+                    Icon(
+                      Icons.people,
+                      size: 30,
+                      color: Provider.of<ThemeProvider>(context).mainFontColor,
+                    ),
+                    if (Provider.of<UserProvider>(context).numOfRequests > 0)
+                      Container(
+                        width: 15,
+                        height: 15,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20)),
+                        child: Text(
+                          '${Provider.of<UserProvider>(context).numOfRequests}',
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                        ),
+                      )
+                  ],
+                ),
                 onTap: () => scaffoldKey.currentState!.openDrawer()),
           ),
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: const Text('Chats',
-              style: TextStyle(fontWeight: FontWeight.bold)),
+          backgroundColor: Provider.of<ThemeProvider>(context).mainColor,
+          title: Text('Chats',
+              style: TextStyle(
+                  color: Provider.of<ThemeProvider>(context).mainFontColor,
+                  fontWeight: FontWeight.bold)),
           actions: [
             DropdownButton(
-                icon: const Icon(Icons.more_vert),
+                icon: Icon(Icons.more_vert,
+                    color: Provider.of<ThemeProvider>(context).mainFontColor),
                 items: const [
                   DropdownMenuItem(
                     value: 'profile',
@@ -58,6 +84,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   DropdownMenuItem(
+                    value: 'appearance',
+                    child: Row(
+                      children: [
+                        Icon(Icons.brush),
+                        SizedBox(width: 10),
+                        Text('Appearance')
+                      ],
+                    ),
+                  ),
+                  DropdownMenuItem(
                     value: 'logout',
                     child: Row(
                       children: [
@@ -66,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Text('LogOut')
                       ],
                     ),
-                  )
+                  ),
                 ],
                 onChanged: (value) {
                   if (value == 'logout') {
@@ -76,6 +112,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         .setLiveUser(FirebaseAuth.instance.currentUser!.uid);
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (_) => const ProfileScreen()));
+                  } else if (value == 'appearance') {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (_) => const AppearanceScreen()));
                   }
                 })
           ],

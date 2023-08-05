@@ -1,4 +1,6 @@
+import 'package:chat_app/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MessageBubble extends StatefulWidget {
   final Key? mykey;
@@ -35,7 +37,7 @@ class _MessageBubbleState extends State<MessageBubble> {
           decoration: BoxDecoration(
               color: widget.isMe
                   ? Colors.grey[300]
-                  : Theme.of(context).primaryColor,
+                  : Provider.of<ThemeProvider>(context).mainColor,
               borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(10),
                   topRight: const Radius.circular(10),

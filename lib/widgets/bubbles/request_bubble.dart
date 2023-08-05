@@ -62,7 +62,8 @@ class _RequestBubbleState extends State<RequestBubble> {
                             height: 25,
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
-                              color: Colors.green,
+                              color:
+                                  Theme.of(context).colorScheme.inversePrimary,
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child:
@@ -75,7 +76,7 @@ class _RequestBubbleState extends State<RequestBubble> {
                             height: 25,
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
-                              color: Colors.red,
+                              color: Colors.grey[500],
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child:
