@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:chat_app/providers/theme_provider.dart';
 import 'package:chat_app/providers/user_provider.dart';
 import 'package:chat_app/widgets/focusable_profile_image.dart';
 import 'package:chat_app/widgets/my_text_field.dart';
@@ -53,7 +54,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 style: TextStyle(fontWeight: FontWeight.bold)),
           ],
         ),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Provider.of<ThemeProvider>(context).mainColor,
       ),
       body: Center(
         child: Column(
