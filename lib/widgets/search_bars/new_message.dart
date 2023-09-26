@@ -62,7 +62,9 @@ class _NewMesasageBarState extends State<NewMesasageBar> {
             .doc('/${widget.liveUserId}')
             .collection('/unreadMessages')
             .doc(response.docs[0].id)
-            .set({'count': response.docs[0]['count'] + 1});
+            .set({
+          'count': response.docs[0]['count'] + 1,
+        });
       } catch (e) {
         await FirebaseFirestore.instance
             .collection('/chats')
@@ -71,6 +73,35 @@ class _NewMesasageBarState extends State<NewMesasageBar> {
             .doc('/${widget.liveUserId}')
             .collection('/unreadMessages')
             .add({'count': 1});
+      }
+      try {
+        var response = await FirebaseFirestore.instance
+            .collection('/chats')
+            .doc('/${widget.contactId}')
+            .collection('/contacts')
+            .doc('/${widget.liveUserId}')
+            .collection('/lastMessage')
+            .get();
+        await FirebaseFirestore.instance
+            .collection('/chats')
+            .doc('/${widget.contactId}')
+            .collection('/contacts')
+            .doc('/${widget.liveUserId}')
+            .collection('/lastMessage')
+            .doc(response.docs[0].id)
+            .set({
+          'content': _message,
+        });
+      } catch (error) {
+        await FirebaseFirestore.instance
+            .collection('/chats')
+            .doc('/${widget.contactId}')
+            .collection('/contacts')
+            .doc('/${widget.liveUserId}')
+            .collection('/lastMessage')
+            .add({
+          'content': _message,
+        });
       }
 
       _message = '';

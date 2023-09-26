@@ -8,6 +8,7 @@ class UserProvider with ChangeNotifier {
   String? username;
   String? profileImage;
   String? userPassword;
+  String? status;
   int numOfRequests = 0;
   Future setLiveUser(id) async {
     try {
@@ -16,9 +17,41 @@ class UserProvider with ChangeNotifier {
       profileImage = result['profileImage'];
       userPassword = result['password'];
       userId = id;
+      status = 'Online';
       notifyListeners();
+      setStatus('Online');
     } catch (e) {
-      rethrow;
+      await FirebaseAuth.instance.signOut();
+    }
+  }
+
+  setStatus(String status) async {
+    try {
+      await FirebaseFirestore.instance
+          .doc('/users/$userId')
+          .update({'status': status});
+    } catch (error) {
+      await FirebaseFirestore.instance.doc('/users/$userId').set({
+        'username': username,
+        'password': userPassword,
+        'profileImage': profileImage,
+        'status': status
+      });
+    }
+  }
+
+  Future<int> setUnseenMessagesNumber(contactId) async {
+    try {
+      var response = await FirebaseFirestore.instance
+          .collection('/chats')
+          .doc('/${FirebaseAuth.instance.currentUser!.uid}')
+          .collection('/contacts')
+          .doc(contactId)
+          .collection('/unreadMessages')
+          .get();
+      return response.docs[0]['count'];
+    } catch (e) {
+      return 0;
     }
   }
 
@@ -77,5 +110,30 @@ class UserProvider with ChangeNotifier {
 
     numOfRequests = response.docs.length;
     notifyListeners();
+  }
+
+  logout() async {
+    await setStatus('Offline');
+    await FirebaseAuth.instance.signOut();
+  }
+
+  setAllMessagesToSeen(contactId) async {
+    try {
+      var response = await FirebaseFirestore.instance
+          .collection('/chats')
+          .doc('/$userId')
+          .collection('/contacts')
+          .doc(contactId)
+          .collection('/unreadMessages')
+          .get();
+      await FirebaseFirestore.instance
+          .collection('/chats')
+          .doc('/$userId')
+          .collection('/contacts')
+          .doc(contactId)
+          .collection('/unreadMessages')
+          .doc(response.docs[0].id)
+          .update({'count': 0});
+    } catch (error) {}
   }
 }

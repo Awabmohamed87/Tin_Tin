@@ -3,6 +3,9 @@ import 'package:chat_app/widgets/focusable_profile_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../providers/user_provider.dart';
 
 class ContactBubble extends StatefulWidget {
   final String contactName;
@@ -20,13 +23,14 @@ class ContactBubble extends StatefulWidget {
 
 class _ContactBubbleState extends State<ContactBubble> {
   int _numOfUnSeenMessages = 0;
+  String _latestMessage = '';
   @override
   void initState() {
-    setLiveUsersNumber();
+    setNumOfUnseenMessages();
     super.initState();
   }
 
-  void setLiveUsersNumber() async {
+  void setNumOfUnseenMessages() async {
     try {
       var response = await FirebaseFirestore.instance
           .collection('/chats')
@@ -37,10 +41,12 @@ class _ContactBubbleState extends State<ContactBubble> {
           .get();
       setState(() {
         _numOfUnSeenMessages = response.docs[0]['count'];
+        _latestMessage = response.docs[0]['latestMessage'];
       });
     } catch (e) {
       setState(() {
         _numOfUnSeenMessages = 0;
+        _latestMessage = 'Latest Message';
       });
     }
   }
@@ -49,6 +55,11 @@ class _ContactBubbleState extends State<ContactBubble> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        Provider.of<UserProvider>(context, listen: false)
+            .setAllMessagesToSeen(widget.contactId);
+        setState(() {
+          _numOfUnSeenMessages = 0;
+        });
         Navigator.of(context).push(MaterialPageRoute(
             builder: (_) => ChatScreen(
                   contactName: widget.contactName,
@@ -74,7 +85,7 @@ class _ContactBubbleState extends State<ContactBubble> {
                   widget.contactName,
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-                const Text('latest message')
+                Text(_latestMessage)
               ],
             ),
             const Spacer(),

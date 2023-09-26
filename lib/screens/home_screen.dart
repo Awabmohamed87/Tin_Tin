@@ -106,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
                 onChanged: (value) {
                   if (value == 'logout') {
-                    FirebaseAuth.instance.signOut();
+                    Provider.of<UserProvider>(context, listen: false).logout();
                   } else if (value == 'profile') {
                     Provider.of<UserProvider>(context, listen: false)
                         .setLiveUser(FirebaseAuth.instance.currentUser!.uid);
